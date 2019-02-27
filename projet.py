@@ -31,7 +31,7 @@ class LocalFileSystem :
         #returns the list of files and folders that are in the directory
         return os.listdir(path)
 
-    def replace(absolutePathTargetFileSystem, fsSource, absolutePathSourceFileSystem):
+    def replace(self, absolutePathTargetFileSystem, fsSource, absolutePathSourceFileSystem):
         return ''
 
 lfs=LocalFileSystem()
