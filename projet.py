@@ -1,8 +1,6 @@
 #! /usr/bin/python
 
 import os
-import filecmp
-import system
 
 '''
 **** METTEZ VOTRE NOM AU NIVEAU DU CODE QUE VOUS ECRIVEZ ****
@@ -15,48 +13,34 @@ computeDirty(O,A,"") (avec "" le chemin relatif dans l'arborescence), et doit re
 On dirait que dirtyA correspond à l'écart (aux différences) entre O et A. Pour synchroniser deux copies A et B d'un même dossier O, il semblerait qu'il faille calculer "O-A"=dirtyA, "O-B"=dirtyB et ensuite appliquer dirtyA à B et dirtyB à A.
 '''
 
-class Synchroniser:
-    {
-    public void synchronize(FileSystem fs1, FileSystem fs2):
-        FileSystem refCopy1 = fs1.getReference()
-        FileSystem refCopy2 = fs2.getReference()
-        List<String> dirtyPath1 = computeDirty(refCopy1, fs1, "")
-        List<String> dirtyPath2 = computeDirty(refCopy2, fs2, "")
+class LocalFileSystem :
+    #def __init__(self,...) == creation de classe
+    def rootOfFileSystem(self):
+        return '/'
 
-    public List<String> computeDirty(FileSystem lastSync, FileSystem fs, String currentRelativePath):
-
-    public void mirror(FileSystem fs1, List<String> dirtyPath1, FileSystem fs2, List<String> DirtyPath2, String currentRelativePath):
-    }
-
-public interface FileSystem:
-    {
-    public String getRoot()
-    public String getParent(String path)
-    public List<String> getChildren(String path)
-    public void replace(String absolutePathTargetFileSystem, FileSystem fsSource, String absolutePathSourceFileSystem)
-    public void fileCopy(File input, File output)
-    public FileSystem getReference()
-    }
-class LocalFileSystem : FileSystem
-    {
-    String rootOfFileSystem
+    def getRoot(self):
+        return self.rootOfFileSystem()
 
 
-    public String getRoot():
-        return rootOfFileSystem
-
-
-    public String getParent(String path):
+    def getParent(self,path):
         # Louis Grison
         return (  (path.rsplit('/',1))[0] )
 
-        public List<String> getChildren(String path):
+    def getChildren(self, path):
         # Louis Grison
         #returns the list of files and folders that are in the directory
         return os.listdir(path)
 
-    public void replace(String absolutePathTargetFileSystem, FileSystem fsSource, String absolutePathSourceFileSystem):
+    def replace(absolutePathTargetFileSystem, fsSource, absolutePathSourceFileSystem):
+        return ''
+
+lfs=LocalFileSystem()
 
 
-    }
+
+
+
+
+
+
 
