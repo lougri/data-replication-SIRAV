@@ -21,7 +21,17 @@ class LocalFileSystem :
 
     def getRoot(self):
         return self.rootOfFileSystem()
+    ## Créez tous les dossiers parents et sous dossiers s'ils n'existent pas.
 
+    def makedirs(self,path):
+
+        normpath = os.path.normpath(path)
+        parentfolder = os.path.dirname(normpath)
+        if parentfolder:
+            try:
+                os.makedirs(parentfolder)
+            except OSError:
+                pass
 
     def getParent(self,path):
         # Louis Grison
