@@ -1,4 +1,5 @@
 #! /usr/bin/python
+# -*- coding: utf-8 -*-
 
 import os
 
@@ -27,8 +28,20 @@ class LocalFileSystem :
     #actuellement retourne la même chose que rootOfFileSystem
     def getRoot(self):
         return self.rootOfFileSystem()
+    ## Créez tous les dossiers parents et sous dossiers s'ils n'existent pas.
 
     #Récupère le chemin du parent du fichier/dossier path, si c'est la racine du dossier a traiter, retourne le même résultat
+
+    def makedirs(self,path):
+
+        normpath = os.path.normpath(path)
+        parentfolder = os.path.dirname(normpath)
+        if parentfolder:
+            try:
+                os.makedirs(parentfolder)
+            except OSError:
+                pass
+
     def getParent(self,path):
         #lipski
         if(path==self.root):
