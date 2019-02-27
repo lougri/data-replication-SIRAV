@@ -16,7 +16,7 @@ On dirait que dirtyA correspond à l'écart (aux différences) entre O et A. Pou
 
 class LocalFileSystem :
     #def __init__(self,...) == creation de classe
-    def __init(self,path):
+    def __init__(self,path):
         root=path
 
     #retourne la racine de l'os
@@ -60,7 +60,7 @@ class LocalFileSystem :
     def replace(self, absolutePathTargetFileSystem, fsSource, absolutePathSourceFileSystem):
         return ''
 
-lfs=LocalFileSystem("/")
+#lfs=LocalFileSystem("/")
 
 
 
