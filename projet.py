@@ -28,6 +28,7 @@ class LocalFileSystem :
     #actuellement retourne la même chose que rootOfFileSystem
     def getRoot(self):
         return self.rootOfFileSystem()
+    #Innocent
     ## Créez tous les dossiers parents et sous dossiers s'ils n'existent pas.
 
     #Récupère le chemin du parent du fichier/dossier path, si c'est la racine du dossier a traiter, retourne le même résultat
