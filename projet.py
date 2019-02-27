@@ -46,7 +46,7 @@ class LocalFileSystem :
         #lipski
         if(path==self.root):
             return path
-        else
+        else:
         # Louis Grison
             return ((path.rsplit('/',1))[0])
 
