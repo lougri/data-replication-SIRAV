@@ -5,3 +5,7 @@ Il n'y a pas d'interface en python (tu appelle simplement les fonctions en mode 
 ```
 
 https://stackoverflow.com/questions/123198/how-do-i-copy-a-file-in-python
+``
+st_mtime
+Moment de la modification de contenu la plus récente, exprimé en secondes.
+``
