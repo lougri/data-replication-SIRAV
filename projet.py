@@ -16,8 +16,8 @@ On dirait que dirtyA correspond à l'écart (aux différences) entre O et A. Pou
 
 class LocalFileSystem :
     #def __init__(self,...) == creation de classe
-    def __init(self,path):
-        root=path
+    def __init__(self,path):
+        self.root=path
 
     #retourne la racine de l'os
     #TODO resultat change en fonction de l'OS, uniquement linux ici
@@ -28,6 +28,7 @@ class LocalFileSystem :
     #actuellement retourne la même chose que rootOfFileSystem
     def getRoot(self):
         return self.rootOfFileSystem()
+    #Innocent
     ## Créez tous les dossiers parents et sous dossiers s'ils n'existent pas.
 
     #Récupère le chemin du parent du fichier/dossier path, si c'est la racine du dossier a traiter, retourne le même résultat
@@ -46,7 +47,7 @@ class LocalFileSystem :
         #lipski
         if(path==self.root):
             return path
-        else
+        else:
         # Louis Grison
             return ((path.rsplit('/',1))[0])
 
@@ -60,7 +61,7 @@ class LocalFileSystem :
     def replace(self, absolutePathTargetFileSystem, fsSource, absolutePathSourceFileSystem):
         return ''
 
-lfs=LocalFileSystem("/")
+#lfs=LocalFileSystem("/")
 
 
 
