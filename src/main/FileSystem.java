@@ -10,4 +10,5 @@ public interface FileSystem {
     public void replace(String absolutePathTargetFileSystem, FileSystem fsSource, String absolutePathSourceFileSystem);
     public void fileCopy(File input, File output);
     public FileSystem getReference();
+    public void makedir(String path);
 }
