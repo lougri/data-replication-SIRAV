@@ -9,4 +9,4 @@ https://stackoverflow.com/questions/123198/how-do-i-copy-a-file-in-python<br>
 st_mtime
 Moment de la modification de contenu la plus récente, exprimé en secondes.
 ``
- http://codes-sources.commentcamarche.net/source/49841-synchronisation-de-repertoiresAuteur
+ 
