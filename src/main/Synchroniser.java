@@ -12,10 +12,10 @@ public class Synchroniser {
 		FileSystem refCopy1 = fs1.getReference();
 		FileSystem refCopy2 = fs2.getReference();
 		List<String> dirtyPath1 = computeDirty(refCopy1, fs1, "");
-		//System.out.println(dirtyPath1);
+		System.out.println(dirtyPath1);
 		List<String> dirtyPath2 = computeDirty(refCopy2, fs2, "");
-		//System.out.println(dirtyPath2);
-		
+		System.out.println(dirtyPath2);
+		mirror(fs1,dirtyPath1,fs2,dirtyPath2,"");
 	}
 
 	private static List<String> computeDirty(FileSystem lastSync, FileSystem fs, String currentRelativePath){
@@ -73,7 +73,63 @@ public class Synchroniser {
 		return res;
 	}
 
-	private void mirror(FileSystem fs1, List<String> dirtyPath1, FileSystem fs2, List<String> DirtyPath2, String currentRelativePath) {
+	private static void mirror(FileSystem fs1, List<String> dirtyPath1, FileSystem fs2, List<String> dirtyPath2, String currentRelativePath) {
+		//cherche tout les dossiers enfants du chemin relatif
+		ArrayList<String> res=new ArrayList<String>();
+		System.out.println("début : "+fs1.getRoot()+currentRelativePath);
+		List<String> children1=fs1.getChildren(fs1.getRoot()+currentRelativePath);
+		List<String> children2=fs2.getChildren(fs2.getRoot()+currentRelativePath);
+		List<String> childrenBoth=children1;
+		childrenBoth.removeAll(children2);
+		childrenBoth.addAll(children2);
+		
+		//int profondeur=currentRelativePath.split(FILE_SEPARATOR).length;
+		
+		int i=0,j=0;
+		File curChildren1,curChildren2,curChildrenBoth;
+		//check directory
+		for(int k=0;k<childrenBoth.size();k++) {
+			curChildrenBoth=new File(childrenBoth.get(k));
+			if(curChildrenBoth.isDirectory()) {
+				//si dossier présent dans aucun des 2, mais dans dirtypath, on à rien à faire
+				if(dirtyPath1.contains(currentRelativePath+FILE_SEPARATOR+curChildrenBoth)||dirtyPath2.contains(currentRelativePath+FILE_SEPARATOR+curChildrenBoth)) {
+					//mirror(fs1,dirtyPath1,fs2,dirtyPath2,currentRelativePath+FILE_SEPARATOR+curChildrenBoth);
+				}
+			}
+		}
+		
+		while(i<children1.size()&&j<children2.size()) {
+			curChildren1=new File(children1.get(i));
+			curChildren2=new File(children2.get(i));
+
+			//si dans fs1
+				//si dans fs1 et fs2
+					//si dans D1 
+						//dans D1 et D2 -> conflict, copier plus récent vers plus vieux
+						//sinon dans D1 uniquement -> copier D1 vers D2
+					//sinon dans D2 et non D1 -> copier D2 vers D1
+				//si fs1 et non fs2
+					//si dans D1 
+						//dans D1 et D2 -> conflict ???
+						//sinon dans D1 uniquement -> copier vers D2
+					//sinon dans D2 et non D1 -> suppr D1
+			//si dans fs2 et non dans fs1
+				//si dans D1 
+					//dans D1 et D2 -> conflict ???
+					//sinon dans D1 uniquement -> suppr D2
+				//sinon dans D2 et non D1 -> copier vers D1
+			//si dans aucun des deux->seul cas : double suppression, ne rien faire
+			
+			System.out.println(curChildren1.getName());
+			System.out.println(curChildren2.getName());
+			System.out.println(curChildren1.getName().equals(curChildren2.getName()));
+			i++;
+			j++;
+		}
+		
+	}
+	
+	private static void traitemenr(String path1, String path2) {
 		
 	}
 }
