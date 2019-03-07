@@ -72,6 +72,31 @@ public class Synchroniser {
 		}
 		return res;
 	}
+	
+	/* def reconciliation
+	private static void mirror(FileSystem fs1, List<String> dirtyPath1, FileSystem fs2, List<String> dirtyPath2, String currentRelativePath) {
+		//cas 1
+		if(!(currentRelativePath!=""&&dirtyPath1.contains(currentRelativePath)&&dirtyPath2.contains(currentRelativePath))) {
+			File file1=new File(fs1.getRoot()+FILE_SEPARATOR+currentRelativePath);
+			File file2=new File(fs2.getRoot()+FILE_SEPARATOR+currentRelativePath);			
+			//cas 2
+			if(file1.isDirectory()&&file2.isDirectory()) {
+				
+			}
+			//cas 3
+			if(!dirtyPath1.contains(file1.getPath())) {
+				System.out.println("copier "+file2+" dans "+file1);
+			}
+			//cas 4
+			if(!dirtyPath2.contains(file2.getPath())) {
+				System.out.println("copier "+file1+" dans "+file2);
+			}
+			//cas 5 ne rien faire
+		}
+	}*/
+		
+		
+
 
 	private static void mirror(FileSystem fs1, List<String> dirtyPath1, FileSystem fs2, List<String> dirtyPath2, String currentRelativePath) {
 		//cherche tout les dossiers enfants du chemin relatif
@@ -82,43 +107,44 @@ public class Synchroniser {
 		List<String> childrenBoth=children1;
 		childrenBoth.removeAll(children2);
 		childrenBoth.addAll(children2);
+		int i=0,j=0;
+		File curChildren1,curChildren2,curChildrenBoth;
 		
 		//int profondeur=currentRelativePath.split(FILE_SEPARATOR).length;
 		
-		int i=0,j=0;
-		File curChildren1,curChildren2,curChildrenBoth;
-		//check directory
-		for(int k=0;k<childrenBoth.size();k++) {
-			curChildrenBoth=new File(childrenBoth.get(k));
-			if(curChildrenBoth.isDirectory()) {
-				//si dossier présent dans aucun des 2, mais dans dirtypath, on à rien à faire
-				if(dirtyPath1.contains(currentRelativePath+FILE_SEPARATOR+curChildrenBoth)||dirtyPath2.contains(currentRelativePath+FILE_SEPARATOR+curChildrenBoth)) {
-					//mirror(fs1,dirtyPath1,fs2,dirtyPath2,currentRelativePath+FILE_SEPARATOR+curChildrenBoth);
-				}
-			}
-		}
-		
+		//mirror(fs1,dirtyPath1,fs2,dirtyPath2,currentRelativePath+FILE_SEPARATOR+curChildrenBoth);
 		while(i<children1.size()&&j<children2.size()) {
 			curChildren1=new File(children1.get(i));
 			curChildren2=new File(children2.get(i));
-
+			
 			//si dans fs1
 				//si dans fs1 et fs2
-					//si dans D1 
-						//dans D1 et D2 -> conflict, copier plus récent vers plus vieux
-						//sinon dans D1 uniquement -> copier D1 vers D2
-					//sinon dans D2 et non D1 -> copier D2 vers D1
+					//si dossier
+						//mirror
+					//si fichier
+						//si dans D1 
+							//dans D1 et D2 -> conflict, copier plus récent vers plus vieux
+							//sinon dans D1 uniquement -> copier D1 vers D2
+						//sinon dans D2 et non D1 -> copier D2 vers D1
 				//si fs1 et non fs2
 					//si dans D1 
-						//dans D1 et D2 -> conflict ???
-						//sinon dans D1 uniquement -> copier vers D2
-					//sinon dans D2 et non D1 -> suppr D1
+						//dans D1 et D2 -> conflict ??? (que ce soit un fichier ou un dossier)
+						//sinon dans D1 uniquement 
+							// si fichier -> copier vers D2
+							// si dossier -> créer dossier dans D2 puis mirror
+					//sinon dans D2 et non D1 
+						// si fichier -> suppr D1
+						// si dossier -> supprimer D2
 			//si dans fs2 et non dans fs1
 				//si dans D1 
-					//dans D1 et D2 -> conflict ???
-					//sinon dans D1 uniquement -> suppr D2
-				//sinon dans D2 et non D1 -> copier vers D1
-			//si dans aucun des deux->seul cas : double suppression, ne rien faire
+					//dans D1 et D2 -> conflict ??? (fichier ou dossier)
+					//sinon dans D1 uniquement
+						// si fichier -> suppr D2
+						// si dossier -> supprimer D2
+				//sinon dans D2 et non D1
+					// si fichier -> copier vers D1
+					// si dossier -> créer le dossier dans D1 puis mirror
+			//si dans aucun des deux->seul cas : double suppression, ne rien faire (fichier ou dossier)
 			
 			System.out.println(curChildren1.getName());
 			System.out.println(curChildren2.getName());
