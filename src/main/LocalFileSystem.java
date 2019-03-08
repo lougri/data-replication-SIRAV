@@ -67,14 +67,29 @@ public class LocalFileSystem implements FileSystem {
 
 	@Override
 	public void fileDelete(String input) {
+		File f=new File(input);
 		try {
-			Files.delete(new File(input).toPath());
+			if(f.isDirectory()) {
+				deleteDir(f);
+			}else {
+				Files.delete(f.toPath());
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-
+	private void deleteDir(File file) {
+	    File[] contents = file.listFiles();
+	    if (contents != null) {
+	        for (File f : contents) {
+	            if (! Files.isSymbolicLink(f.toPath())) {
+	                deleteDir(f);
+	            }
+	        }
+	    }
+	    file.delete();
+	}
 	@Override
 	public void makedir(String path) {
 		// TODO Auto-generated method stub

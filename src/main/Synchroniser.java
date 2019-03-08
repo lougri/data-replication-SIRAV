@@ -15,7 +15,7 @@ public class Synchroniser {
 		System.out.println(dirtyPath1);
 		List<String> dirtyPath2 = computeDirty(refCopy2, fs2, "");
 		System.out.println(dirtyPath2);
-		//mirror(fs1,dirtyPath1,fs2,dirtyPath2,"");
+		mirror(fs1,dirtyPath1,fs2,dirtyPath2,"");
 	}
 
 	private static List<String> computeDirty(FileSystem lastSync, FileSystem fs, String currentRelativePath){
@@ -114,9 +114,10 @@ public class Synchroniser {
 	private static void mirror(FileSystem fs1, List<String> dirtyPath1, FileSystem fs2, List<String> dirtyPath2, String currentRelativePath) {
 		//cherche tout les dossiers enfants du chemin relatif
 		ArrayList<String> res=new ArrayList<String>();
-		System.out.println("début : "+fs1.getRoot()+currentRelativePath);
+		//System.out.println("début : "+fs1.getRoot()+currentRelativePath);
 		List<String> children1=fs1.getChildren(fs1.getRoot()+currentRelativePath);
 		List<String> children2=fs2.getChildren(fs2.getRoot()+currentRelativePath);
+		List<String> conflict=new ArrayList<String>();
 		String root1=fs1.getRoot();
 		String root2=fs2.getRoot();
 		List<String> childrenBoth=children1;
@@ -134,40 +135,41 @@ public class Synchroniser {
 		//mirror(fs1,dirtyPath1,fs2,dirtyPath2,currentRelativePath+FILE_SEPARATOR+curChildrenBoth);
 		while(k<fileBoth.size()) {
 			curChildrenBoth=fileBoth.get(k);
-			System.out.println(curChildrenBoth.getName());
+			//System.out.println(curChildrenBoth.getName());
 			//si dans fs1
 			if(file1.contains(new File(root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName()))) {
-				System.out.println("\t dans fs1");
+				//System.out.println("\t dans fs1");
 				//si dans fs1 et fs2
 				if(file2.contains(new File(root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName()))) {
-					System.out.println("\t dans fs2");
+					//System.out.println("\t dans fs2");
 					//si dossier
 					if(curChildrenBoth.isDirectory()) {
 						//si dans D1 et/ou D2
 						if(dirtyPath1.contains(currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName())||dirtyPath2.contains(currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName())) {	
 							//mirror
-							System.out.println("dossier dans un dirty : "+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
+							//System.out.println("dossier dans un dirty : "+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 							mirror(fs1,dirtyPath1,fs2,dirtyPath2,currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 						}
 						//si fichier
 					}else {
 						//si dans D1 
 						if(dirtyPath1.contains(currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName())){
-							System.out.println("\t\t dans D1");
+							//System.out.println("\t\t dans D1");
 							//dans D1 et D2 -> conflict, copier plus récent vers plus vieux
 							if(dirtyPath2.contains(currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName())) {
-								System.out.println("\t\t dans D2");
-								System.out.println(curChildrenBoth.getName()+" -> copier vieux vers recent");
-								//sinon dans D1 uniquement -> copier D1 vers D2
+								//System.out.println("\t\t dans D2");
+								//System.out.println(curChildrenBoth.getName()+" -> copier vieux vers recent");
+								conflict.add(currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
+							//sinon dans D1 uniquement -> copier D1 vers D2
 							}else {
-								System.out.println("copier "+root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName()+" vers "+root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
+								//System.out.println("copier "+root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName()+" vers "+root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 								fs2.replace(root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName(), fs1, root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 							}
 							//sinon dans D2 et non D1 -> copier D2 vers D1
 						}else {// ajouter if dans D2 car on n'en est pas sûr sinon
 							if(dirtyPath2.contains(currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName())) {
-								System.out.println("\t\t dans D2");
-								System.out.println("copier "+root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName()+" vers "+root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
+								//System.out.println("\t\t dans D2");
+								//System.out.println("copier "+root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName()+" vers "+root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 								fs1.replace(root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName(), fs2, root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 							}
 						}
@@ -177,21 +179,22 @@ public class Synchroniser {
 					//si dans D1
 					if(dirtyPath1.contains(currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName())){
 
-						System.out.println("\t\t dans D1");
+						//System.out.println("\t\t dans D1");
 						//dans D1 et D2 -> conflict ??? (que ce soit un fichier ou un dossier)
 						if(dirtyPath2.contains(currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName())) {
-							System.out.println("\t\t dans D2");
-							System.out.println("conflict");
+							//System.out.println("\t\t dans D2");
+							//System.out.println("conflict");
+							conflict.add(currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 							//sinon dans D1 uniquement 
 						}else {
 							// si dossier -> créer dossier dans D2 puis mirror
 							if(curChildrenBoth.isDirectory()) {
-								System.out.println("créer "+root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName()+"dans D2 puis miror sur "+root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
+								//System.out.println("créer "+root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName()+"dans D2 puis miror sur "+root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 								fs2.makedir(root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 								mirror(fs1,dirtyPath1,fs2,dirtyPath2,currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 								// si fichier -> copier vers D2
 							}else {
-								System.out.println("copier "+root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName()+" dans D2 : "+root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
+								//System.out.println("copier "+root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName()+" dans D2 : "+root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 								fs1.fileCopy(root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName(), root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 							}
 						}
@@ -200,11 +203,11 @@ public class Synchroniser {
 						System.out.println("\t\t dans D2");
 						// si dossier -> supprimer D1
 						if(curChildrenBoth.isDirectory()) {
-							System.out.println("supprimer ce dossier et ces sous-dossier"+root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
+							//System.out.println("supprimer ce dossier et ces sous-dossier"+root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 							fs1.fileDelete(root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 							// si fichier -> suppr D1
 						}else {
-							System.out.println("supprimer "+root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
+							//System.out.println("supprimer "+root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 							fs1.fileDelete(root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 						}
 					}
@@ -214,38 +217,39 @@ public class Synchroniser {
 			// ajouter else (comme ça on a "non fs1"
 			else {
 				if(file2.contains(new File(root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName()))) {
-					System.out.println("\t dans fs1");
+					//System.out.println("\t dans fs1");
 					//si dans D1 
 					if(dirtyPath1.contains(currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName())){
-						System.out.println("\t\t dans D1");
+						//System.out.println("\t\t dans D1");
 						//dans D1 et D2 -> conflict ??? (fichier ou dossier)
 						if(dirtyPath2.contains(currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName())){
-							System.out.println("\t\t dans D2");
-							System.out.println("conflict sur "+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
+							//System.out.println("\t\t dans D2");
+							//System.out.println("conflict sur "+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
+							conflict.add(currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 							//sinon dans D1 uniquement
 						}else {
 							// si dossier -> supprimer D2
 							if(curChildrenBoth.isDirectory()) {
-								System.out.println("supprimer  ce dossier et ces sous-dossier"+root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
-								fs1.fileDelete(root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
+								//System.out.println("supprimer  ce dossier et ces sous-dossier"+root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
+								fs1.fileDelete(root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 								// si fichier -> suppr D2
 							}else {
-								System.out.println("supprimer "+root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
+								//System.out.println("supprimer "+root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 								fs2.fileDelete(root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 							}
 						}
 						//sinon dans D2 et non D1
 					}else { // ajouter test D2
 						if(dirtyPath2.contains(currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName())){
-							System.out.println("\t\t dans D2");
+							//System.out.println("\t\t dans D2");
 							// si dossier -> créer le dossier dans D1 puis mirror
 							if(curChildrenBoth.isDirectory()) {
-								System.out.println("créer "+root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName()+"dans D1 puis miror sur "+root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
-								fs1.makedir(root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
+								//System.out.println("créer "+root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName()+" dans D1 puis miror sur "+root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
+								fs1.makedir(root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 								mirror(fs1,dirtyPath1,fs2,dirtyPath2,currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 								// si fichier -> copier vers D1
 							}else {
-								System.out.println("copier "+root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName()+" dans D1 : "+root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
+								//System.out.println("copier "+root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName()+" dans D1 : "+root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 								fs1.fileCopy(root2+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName(), root1+currentRelativePath+FILE_SEPARATOR+curChildrenBoth.getName());
 							}
 						}
@@ -254,6 +258,10 @@ public class Synchroniser {
 			}
 			//si dans aucun des deux->seul cas : double suppression, ne rien faire (fichier ou dossier)
 			k++;
+		}
+		
+		for(String s:conflict) {
+			System.out.println("Conflict sur : "+ s);
 		}
 
 	}
