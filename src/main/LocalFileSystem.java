@@ -11,12 +11,12 @@ public class LocalFileSystem implements FileSystem {
 
 	private FileSystem reference;
 	private String rootPath;
-	
+
 	public LocalFileSystem(FileSystem reference,String root){
 		this.reference=reference;
 		this.rootPath=root;
 	}
-	
+
 	public LocalFileSystem(String root){
 		this.reference=null;
 		this.rootPath=root;
@@ -39,8 +39,10 @@ public class LocalFileSystem implements FileSystem {
 		ArrayList<String> res=new ArrayList<String>();
 		File f=new File(path);
 		File[] liste=f.listFiles();
-		for(int i=0;i<liste.length;i++) {
-			res.add(liste[i].toString());
+		if(liste!=null) {
+			for(int i=0;i<liste.length;i++) {
+				res.add(liste[i].toString());
+			}
 		}
 		return res;
 	}
@@ -48,20 +50,31 @@ public class LocalFileSystem implements FileSystem {
 	@Override
 	public void replace(String absolutePathTargetFileSystem, FileSystem fsSource, String absolutePathSourceFileSystem) {
 		// TODO Auto-generated method stub
-		
+		this.fileDelete(absolutePathTargetFileSystem);
+		this.fileCopy(absolutePathSourceFileSystem, absolutePathTargetFileSystem);
 	}
 
 	@Override
-	public void fileCopy(File input, File output) {
+	public void fileCopy(String input, String output) {
 		// TODO Auto-generated method stub
 		try {
-			Files.copy(input.toPath(), output.toPath());
+			Files.copy(new File(input).toPath(), new File(output).toPath());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
+
+	@Override
+	public void fileDelete(String input) {
+		try {
+			Files.delete(new File(input).toPath());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	@Override
 	public void makedir(String path) {
 		// TODO Auto-generated method stub
@@ -79,8 +92,8 @@ public class LocalFileSystem implements FileSystem {
 		// TODO Auto-generated method stub
 		return reference;
 	}
-	
-	
+
+
 	@Override
 	public String getRoot() {
 		// TODO Auto-generated method stub
